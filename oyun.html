@@ -206,126 +206,140 @@
     </div>
 
     <script>
-const DB = {
-    'bread-bottom': 'layer l-bread-bottom',
-    'meat': 'layer l-meat',
-    'chicken': 'layer l-chicken',
-    'salami': 'layer l-salami',
-    'cheese-cheddar': 'layer l-cheese-cheddar',
-    'cheese-swiss': 'layer l-cheese-swiss',
-    'cheese-white': 'layer l-cheese-white',
-    'lettuce': 'layer l-lettuce',
-    'tomato': 'layer l-tomato',
-    'onion': 'layer l-onion',
-    'sauce-ketchup': 'layer l-sauce-ketchup',
-    'sauce-mayo': 'layer l-sauce-mayo',
-    'sauce-mustard': 'layer l-sauce-mustard',
-    'bread-top': 'layer l-bread-top'
-};
+<script>
+        const DB = {
+            'bread-bottom': 'layer l-bread-bottom',
+            'meat': 'layer l-meat',
+            'chicken': 'layer l-chicken',
+            'salami': 'layer l-salami',
+            'cheese-cheddar': 'layer l-cheese-cheddar',
+            'cheese-swiss': 'layer l-cheese-swiss',
+            'cheese-white': 'layer l-cheese-white',
+            'lettuce': 'layer l-lettuce',
+            'tomato': 'layer l-tomato',
+            'onion': 'layer l-onion',
+            'sauce-ketchup': 'layer l-sauce-ketchup',
+            'sauce-mayo': 'layer l-sauce-mayo',
+            'sauce-mustard': 'layer l-sauce-mustard',
+            'bread-top': 'layer l-bread-top'
+        };
 
-const opts = Object.keys(DB).filter(k => !k.includes('bread'));
+        const opts = Object.keys(DB).filter(k => !k.includes('bread'));
 
-let target = []; 
-let player = [];
+        let target = []; 
+        let player = [];
 
-
-function newGame() {
-    player = []; 
-    target = []; 
-    updateDisplay('work-area', player); 
-
-    
-    target.push('bread-bottom');
-    const count = Math.floor(Math.random() * 4) + 3;
-    for (let i = 0; i < count; i++) {
-        const rand = opts[Math.floor(Math.random() * opts.length)];
-        if (target[target.length - 1] !== rand) {
-            target.push(rand);
-        } else {
-            i--; 
-        }
-    }
-
-   
-    target.push('bread-top');
-
-   
-    updateDisplay('top-area', target);
-    
-  
-    const modal = document.getElementById('loseModal');
-    if(modal) modal.style.display = 'none';
-}
-
-
-function updateDisplay(elementId, stack) {
-    const container = document.getElementById(elementId);
-    container.innerHTML = ''; 
-
-    stack.forEach(item => {
-        const div = document.createElement('div');
-        div.className = DB[item]; 
-        container.appendChild(div);
-    });
-}
-
-
-function addIngredient(type) {
-    if (player.length < 8) {
-        player.push(type);
-        updateDisplay('work-area', player);
-    }
-}
-
-
-function undo() {
-    player.pop(); 
-    updateDisplay('work-area', player); 
-}
-
-
-function checkWin() {
-    const tStr = JSON.stringify(target);
-    const pStr = JSON.stringify(player);
-
-    if (tStr === pStr) 
-        alert('TEBRİKLER! Mükemmel Sandviç! 🥪✨');
-        newGame();
-    } else {
-        const modal = document.getElementById('loseModal');
-        if (modal) {
-            modal.style.display = 'flex'; 
-        } else {
+        function newGame() {
+            player = []; 
+            target = []; 
             
-            alert('Yanlış oldu! Tekrar dene.');
-            player = [];
-            updateDisplay('work-area', player);
+            
+            updateDisplay('player-stack', player); 
+            target.push('bread-bottom');
+            
+            
+            const count = Math.floor(Math.random() * 4) + 3;
+            for (let i = 0; i < count; i++) {
+                const rand = opts[Math.floor(Math.random() * opts.length)];
+                if (target[target.length - 1] !== rand) {
+                    target.push(rand);
+                } else {
+                    i--; 
+                }
+            }
+
+           
+            target.push('bread-top');
+
+          
+            updateDisplay('target-display', target);
+            
+           
+            const modal = document.getElementById('loseModal');
+            if(modal) modal.style.display = 'none';
+            const winModal = document.getElementById('winModal');
+            if(winModal) winModal.style.display = 'none';
         }
-    }
-}
 
+        function updateDisplay(elementId, stack) {
+            const container = document.getElementById(elementId);
+            if (!container) {
+                console.error("Hata: " + elementId + " bulunamadı!");
+                return;
+            }
+            container.innerHTML = ''; 
 
-function toggleRecipe() {
-    const trMap = {
-        'bread-bottom': 'Alt Ekmek', 'bread-top': 'Üst Ekmek', 'meat': 'Köfte', 'chicken': 'Tavuk',
-        'salami': 'Salam', 'cheese-cheddar': 'Çedar', 'cheese-swiss': 'İsviçre P.', 'cheese-white': 'Beyaz P.',
-        'lettuce': 'Marul', 'tomato': 'Domates', 'onion': 'Soğan',
-        'sauce-ketchup': 'Ketçap', 'sauce-mayo': 'Mayonez', 'sauce-mustard': 'Hardal'
-    };
-    
-    let recipeText = "📋 SİPARİŞ LİSTESİ:\n\n";
-    target.forEach((item, index) => 
-        const name = trMap[item] || item; 
-        recipeText += (index + 1) + ". " + name + "\n";
-    });
-    alert(recipeText);
-}
+            stack.forEach(item => {
+                const div = document.createElement('div');
+                div.className = DB[item]; 
+                container.appendChild(div);
+            });
+        }
 
+      
+        function add(type) {
+            if (player.length < 8) {
+                player.push(type);
+                updateDisplay('player-stack', player);
+            }
+        }
 
-newGame();
+        function undo() {
+            player.pop();
+            updateDisplay('player-stack', player); 
+        }
+
+        
+        function resetPlayer() {
+            player = [];
+            updateDisplay('player-stack', player);
+        }
+
+        function checkWin() {
+            const tStr = JSON.stringify(target);
+            const pStr = JSON.stringify(player);
+
+            
+            if (tStr === pStr) {
+                const winModal = document.getElementById('winModal');
+                if(winModal) winModal.style.display = 'flex';
+                // alert('TEBRİKLER! Mükemmel Sandviç! 🥪✨'); 
+                // newGame(); 
+            } else {
+                const modal = document.getElementById('loseModal');
+                if (modal) {
+                    modal.style.display = 'flex'; 
+                } else {
+                    alert('Yanlış oldu! Tekrar dene.');
+                    player = [];
+                    updateDisplay('player-stack', player);
+                }
+            }
+        }
+
+        function toggleRecipe() {
+            const trMap = {
+                'bread-bottom': 'Alt Ekmek', 'bread-top': 'Üst Ekmek', 'meat': 'Köfte', 'chicken': 'Tavuk',
+                'salami': 'Salam', 'cheese-cheddar': 'Çedar', 'cheese-swiss': 'İsviçre P.', 'cheese-white': 'Beyaz P.',
+                'lettuce': 'Marul', 'tomato': 'Domates', 'onion': 'Soğan',
+                'sauce-ketchup': 'Ketçap', 'sauce-mayo': 'Mayonez', 'sauce-mustard': 'Hardal'
+            };
+            
+            let recipeText = "📋 SİPARİŞ LİSTESİ:\n\n";
+            target.forEach((item, index) => {
+                const name = trMap[item] || item; 
+                recipeText += (index + 1) + ". " + name + "\n";
+            });
+            alert(recipeText);
+        }
+
+        // Oyunu başlat
+        newGame();
+    </script>
     </script>
 </body>
 
 </html>
+
 
 
