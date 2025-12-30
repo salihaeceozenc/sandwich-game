@@ -206,8 +206,6 @@
     </div>
 
     <script>
-/* === 1. VERİ TABANI VE AYARLAR === */
-// Malzemelerin kod isimlerini ve CSS sınıflarını eşleştiriyoruz
 const DB = {
     'bread-bottom': 'layer l-bread-bottom',
     'meat': 'layer l-meat',
@@ -238,14 +236,9 @@ function newGame() {
 
     
     target.push('bread-bottom');
-
-   
     const count = Math.floor(Math.random() * 4) + 3;
-
     for (let i = 0; i < count; i++) {
         const rand = opts[Math.floor(Math.random() * opts.length)];
-        
-       
         if (target[target.length - 1] !== rand) {
             target.push(rand);
         } else {
@@ -334,4 +327,5 @@ newGame();
 </body>
 
 </html>
+
 
