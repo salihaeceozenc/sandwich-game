@@ -196,7 +196,7 @@
     </div>
 
     <script>
-        const DB = {
+        const ingredients = {
             'bread-bottom': 'layer l-bread-bottom',
             'meat': 'layer l-meat',
             'chicken': 'layer l-chicken',
@@ -213,7 +213,7 @@
             'bread-top': 'layer l-bread-top'
         };
 
-        const opts = Object.keys(DB).filter(k => !k.includes('bread'));
+        const opts = Object.keys(ingredients).filter(k => !k.includes('bread'));
 
         let target = []; 
         let player = [];
@@ -262,7 +262,7 @@
 
             stack.forEach(item => {
                 const div = document.createElement('div');
-                div.className = DB[item]; 
+                div.className = ingredients[item]; 
                 container.appendChild(div);
             });
         }
@@ -317,4 +317,5 @@
     </script>
 </body>
 </html>
+
 
