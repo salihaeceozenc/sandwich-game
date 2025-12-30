@@ -285,10 +285,10 @@
         }
 
         function checkWin() {
-            const tStr = JSON.stringify(target);
-            const pStr = JSON.stringify(player);
+            const wantedOne = JSON.stringify(target);
+            const madeOne = JSON.stringify(player);
 
-            if (tStr === pStr) {
+            if (wantedOne === madeOne) {
                 clearInterval(interval); 
                 document.getElementById('winModal').style.display = 'flex';
             } else {
@@ -317,3 +317,4 @@
     </script>
 </body>
 </html>
+
