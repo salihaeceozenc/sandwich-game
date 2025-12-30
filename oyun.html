@@ -206,146 +206,132 @@
     </div>
 
     <script>
-        const DB = {
-            'bread-bottom':   'layer l-bun-bottom',
-            'bread-top':      'layer l-bun-top',
-            'meat':           'layer l-meat',
-            'chicken':        'layer l-chicken',
-            'salami':         'layer l-salami',
-            'cheese-cheddar': 'layer l-cheese-cheddar',
-            'cheese-swiss':   'layer l-cheese-swiss',
-            'cheese-white':   'layer l-cheese-white',
-            'lettuce':        'layer l-lettuce',
-            'tomato':         'layer l-tomato',
-            'onion':          'layer l-onion',
-            'sauce-ketchup':  'layer l-sauce l-ketchup',
-            'sauce-mayo':     'layer l-sauce l-mayo',
-            'sauce-mustard':  'layer l-sauce l-mustard'
-        };
+/* === 1. VERİ TABANI VE AYARLAR === */
+// Malzemelerin kod isimlerini ve CSS sınıflarını eşleştiriyoruz
+const DB = {
+    'bread-bottom': 'layer l-bread-bottom',
+    'meat': 'layer l-meat',
+    'chicken': 'layer l-chicken',
+    'salami': 'layer l-salami',
+    'cheese-cheddar': 'layer l-cheese-cheddar',
+    'cheese-swiss': 'layer l-cheese-swiss',
+    'cheese-white': 'layer l-cheese-white',
+    'lettuce': 'layer l-lettuce',
+    'tomato': 'layer l-tomato',
+    'onion': 'layer l-onion',
+    'sauce-ketchup': 'layer l-sauce-ketchup',
+    'sauce-mayo': 'layer l-sauce-mayo',
+    'sauce-mustard': 'layer l-sauce-mustard',
+    'bread-top': 'layer l-bread-top'
+};
 
-        let target = [];
-        let player = [];
-        
-        let timeLeft = 40; 
-        let timerId = null; 
-        let isGameActive = false;
+const opts = Object.keys(DB).filter(k => !k.includes('bread'));
 
-        window.onload = newGame;
+let target = []; 
+let player = [];
 
-        function newGame() {
-           
-            document.getElementById('winModal').style.display = 'none';
-            document.getElementById('loseModal').style.display = 'none';
-            
-            player = [];
-            updateDisplay('player-stack', player);
-            
-            target = ['bread-bottom'];
-            const opts = Object.keys(DB).filter(k => k !== 'bread-bottom' && k !== 'bread-top');
-            const count = Math.floor(Math.random() * 4) + 3;
-            for(let i=0; i<count; i++) {
-                const rand = opts[Math.floor(Math.random() * opts.length)];
-                if(target[target.length-1] !== rand) target.push(rand);
-                else i--;
-            }
-            target.push('bread-top');
-            updateDisplay('target-display', target);
 
-            
-            startTimer();
-        }
+function newGame() {
+    player = []; 
+    target = []; 
+    updateDisplay('work-area', player); 
 
-        
-        function startTimer() {
-            // Önceki sayaç varsa temizle
-            if(timerId) clearInterval(timerId);
-            
-            timeLeft = 40; // 
-            document.getElementById('timer-display').innerText = timeLeft;
-            isGameActive = true;
-
-            timerId = setInterval(() => {
-                timeLeft--;
-                document.getElementById('timer-display').innerText = timeLeft;
-                
-                
-                if(timeLeft <= 10) {
-                    document.querySelector('.timer-box').style.backgroundColor = '#c0392b';
-                } else {
-                    document.querySelector('.timer-box').style.backgroundColor = '#e74c3c';
-                }
-
-                if(timeLeft <= 0) {
-                    gameOver();
-                }
-            }, 1000); 
-        }
-
-        function gameOver() {
-            clearInterval(timerId);
-            isGameActive = false;
-            document.getElementById('loseModal').style.display = 'flex';
-        }
-
-        function updateDisplay(elementId, stack) {
-            const container = document.getElementById(elementId);
-            container.innerHTML = '';
-            stack.forEach(itemKey => {
-                const div = document.createElement('div');
-                div.className = DB[itemKey];
-                container.appendChild(div);
-            });
-        }
-
-        function add(item) {
     
-            if(!isGameActive) return;
+    target.push('bread-bottom');
+
+   
+    const count = Math.floor(Math.random() * 4) + 3;
+
+    for (let i = 0; i < count; i++) {
+        const rand = opts[Math.floor(Math.random() * opts.length)];
+        
+       
+        if (target[target.length - 1] !== rand) {
+            target.push(rand);
+        } else {
+            i--; 
+        }
+    }
+
+   
+    target.push('bread-top');
+
+   
+    updateDisplay('top-area', target);
+    
+  
+    const modal = document.getElementById('loseModal');
+    if(modal) modal.style.display = 'none';
+}
+
+
+function updateDisplay(elementId, stack) {
+    const container = document.getElementById(elementId);
+    container.innerHTML = ''; 
+
+    stack.forEach(item => {
+        const div = document.createElement('div');
+        div.className = DB[item]; 
+        container.appendChild(div);
+    });
+}
+
+
+function addIngredient(type) {
+    if (player.length < 8) {
+        player.push(type);
+        updateDisplay('work-area', player);
+    }
+}
+
+
+function undo() {
+    player.pop(); 
+    updateDisplay('work-area', player); 
+}
+
+
+function checkWin() {
+    const tStr = JSON.stringify(target);
+    const pStr = JSON.stringify(player);
+
+    if (tStr === pStr) 
+        alert('TEBRİKLER! Mükemmel Sandviç! 🥪✨');
+        newGame();
+    } else {
+        const modal = document.getElementById('loseModal');
+        if (modal) {
+            modal.style.display = 'flex'; 
+        } else {
             
-            player.push(item);
-            updateDisplay('player-stack', player);
-        }
-
-        function undo() {
-            if(!isGameActive) return;
-            player.pop();
-            updateDisplay('player-stack', player);
-        }
-
-        function resetPlayer() {
-            if(!isGameActive) return;
+            alert('Yanlış oldu! Tekrar dene.');
             player = [];
-            updateDisplay('player-stack', player);
+            updateDisplay('work-area', player);
         }
+    }
+}
 
-        function checkWin() {
-            if(!isGameActive) return;
 
-            if (JSON.stringify(player) === JSON.stringify(target)) {
-                clearInterval(timerId);
-                document.getElementById('winModal').style.display = 'flex';
-            } else {
-                alert("Sipariş Yanlış! 🧐\nMavi kutunun üzerine gelerek malzemeleri kontrol et.");
-                const p = document.getElementById('player-stack');
-                p.style.transform = 'translateX(10px) scale(0.8)';
-                setTimeout(() => p.style.transform = 'translateX(-10px) scale(0.8)', 100);
-                setTimeout(() => p.style.transform = 'translateX(0) scale(0.8)', 200);
-            }
-        }
+function toggleRecipe() {
+    const trMap = {
+        'bread-bottom': 'Alt Ekmek', 'bread-top': 'Üst Ekmek', 'meat': 'Köfte', 'chicken': 'Tavuk',
+        'salami': 'Salam', 'cheese-cheddar': 'Çedar', 'cheese-swiss': 'İsviçre P.', 'cheese-white': 'Beyaz P.',
+        'lettuce': 'Marul', 'tomato': 'Domates', 'onion': 'Soğan',
+        'sauce-ketchup': 'Ketçap', 'sauce-mayo': 'Mayonez', 'sauce-mustard': 'Hardal'
+    };
+    
+    let recipeText = "📋 SİPARİŞ LİSTESİ:\n\n";
+    target.forEach((item, index) => 
+        const name = trMap[item] || item; 
+        recipeText += (index + 1) + ". " + name + "\n";
+    });
+    alert(recipeText);
+}
 
-        function toggleRecipe() {
-            const trMap = {
-                'bread-bottom': 'Alt Ekmek', 'bread-top': 'Üst Ekmek', 'meat': 'Köfte', 'chicken': 'Tavuk',
-                'salami': 'Salam', 'cheese-cheddar': 'Çedar', 'cheese-swiss': 'İsviçre P.', 'cheese-white': 'Beyaz P.',
-                'lettuce': 'Marul', 'tomato': 'Domates', 'onion': 'Soğan',
-                'sauce-ketchup': 'Ketçap', 'sauce-mayo': 'Mayonez', 'sauce-mustard': 'Hardal'
-            };
-            let recipeText = "📋 SİPARİŞ LİSTESİ:\n\n";
-            target.forEach((item, index) => {
-                recipeText += (index + 1) + ". " + trMap[item] + "\n";
-            });
-            alert(recipeText);
-        }
+
+newGame();
     </script>
 </body>
 
 </html>
+
